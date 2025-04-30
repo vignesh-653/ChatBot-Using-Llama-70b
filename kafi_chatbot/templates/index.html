@@ -1,0 +1,147 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kafi Chatbot</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Kafi ☕</h1>
+    <div id="chat-box" class="chat-box"></div>
+    <form id="chat-form" onsubmit="sendMessage(); return false;">
+      <input type="text" id="user-input" placeholder="Type a message..." autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const storageKey = "kafi_chat";
+
+    // Load messages from sessionStorage
+    window.onload = () => {
+      const saved = sessionStorage.getItem(storageKey);
+      if (saved) chatBox.innerHTML = saved;
+    };
+
+    function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
+
+      const userDiv = document.createElement("div");
+      userDiv.className = "msg user";
+      userDiv.innerText = message;
+
+      const botDiv = document.createElement("div");
+      botDiv.className = "msg bot";
+      botDiv.innerText = "Still working on it...";
+
+      chatBox.appendChild(userDiv);
+      chatBox.appendChild(botDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Save updated messages
+      sessionStorage.setItem(storageKey, chatBox.innerHTML);
+      input.value = "";
+    }
+  </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kafi Chatbot</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="main-bg">
+    <header>
+      <div class="logo">☕ Kafi</div>
+      <nav>
+        <a href="#">Menu</a>
+        <a href="#">Offers</a>
+        <a href="#">Contact</a>
+      </nav>
+    </header>
+
+    <div class="chat-container">
+      <div id="chat-box" class="chat-box"></div>
+      <form id="chat-form" onsubmit="sendMessage(); return false;">
+        <input type="text" id="user-input" placeholder="Type a message..." autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const storageKey = "kafi_chat";
+    const socket = new WebSocket("ws://localhost:8765"); // Correct WebSocket endpoint to chat terminal
+
+
+    // When the connection to WebSocket is established
+    socket.onopen = () => {
+      console.log("Connected to WebSocket server");
+    };
+
+    // When a message is received from the WebSocket server
+    socket.onmessage = function(event) {
+      const botMessage = event.data;
+      const botDiv = document.createElement("div");
+      botDiv.className = "msg bot";
+      botDiv.innerText = botMessage;
+      chatBox.appendChild(botDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    };
+
+    // When WebSocket connection is closed
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    // On WebSocket error
+    socket.onerror = (error) => {
+      console.log("WebSocket error:", error);
+    };
+
+    // Load saved chat history (if any)
+    window.onload = () => {
+      const saved = sessionStorage.getItem(storageKey);
+      if (saved) {
+        chatBox.innerHTML = saved;
+      } else {
+        const greet = document.createElement("div");
+        greet.className = "msg bot";
+        greet.innerText = "Hi! Welcome to Kafi ☕ How can I help you today?";
+        chatBox.appendChild(greet);
+      }
+    };
+
+    // Function to send message to WebSocket server
+    function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
+
+      const userDiv = document.createElement("div");
+      userDiv.className = "msg user";
+      userDiv.innerText = message;
+      chatBox.appendChild(userDiv);
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      sessionStorage.setItem(storageKey, chatBox.innerHTML);
+      input.value = "";
+
+      // Send message to WebSocket server
+      socket.send(message);
+    }
+  </script>
+
+</body>
+</html>

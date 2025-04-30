@@ -1,0 +1,16 @@
+together
+python-dotenv
+pandas
+scikit-learn
+mlxtend
+firebase-admin
+faiss-cpu 
+sentence-transformers
+fastapi
+uvicorn
+# spacy
+pymongo 
+itsdangerous
+httpx  
+python-multipart
+websockets
